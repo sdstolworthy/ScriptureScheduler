@@ -72,6 +72,7 @@ class SettingsModal extends React.Component {
         }
       }
     })
+    return bookCount
   }
   handleDayChange = (value) => {
     try {
@@ -160,6 +161,21 @@ class SettingsModal extends React.Component {
                       </Text>
                     </Body>
                   </ListItem>
+                )
+              })}
+              {this.state.bookSelection.map(book => {
+                const bookCount = this.mapBookToChapterCount(book)
+                const subBooks = bookCount.map(subBook => {
+                  return (
+                    <Item>
+                      <Text>{subBook}</Text>
+                    </Item>
+                  )
+                })
+                return (
+                  <List>
+                    {bookChapters}
+                  </List>
                 )
               })}
             </Form>
