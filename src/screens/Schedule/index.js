@@ -20,7 +20,8 @@ import {
   Body,
   Item,
   Input,
-  Fab
+  Fab,
+  CheckBox
 } from 'native-base'
 import AvailableSchedulesModal from '../AvailableSchedules'
 import SettingsModal from '../Settings'
@@ -51,9 +52,17 @@ class Schedule extends Component {
   addFromAvailableSchedulesModal = () => {
     this.setState({ showAvailableSchedules: false, settingsVisible: true })
   }
+  markComplete = (assignmentId, scheduleId) => {
+    this.props.markAssignmentComplete(assignmentId, scheduleId)
+  }
   renderListItem = (value, index, array) => {
     return (
-      <ListItem key={index}>
+      <ListItem key={index} onPress={() => this.markComplete(value.id, this.props.assignment.id)}>
+        <Left>
+          <CheckBox 
+            checked={value.complete}
+          />
+        </Left>
         <Body>
           {(value.reading || []).map((v, i) => (
             <Text key={i}>
@@ -123,7 +132,8 @@ const mstp = (state) => {
   }
 }
 const mdtp = (dispatch) => ({
-  getSchedule: (id) => dispatch(ScheduleActions.loadSchedule(id))
+  getSchedule: (id) => dispatch(ScheduleActions.loadSchedule(id)),
+  markAssignmentComplete: (assignmentId, scheduleId) => dispatch(ScheduleActions.markAsComplete(assignmentId, scheduleId))
 })
 
 export default connect(mstp, mdtp)(Schedule)

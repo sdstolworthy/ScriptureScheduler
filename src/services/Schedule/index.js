@@ -14,7 +14,6 @@ export default class ScheduleService {
       scriptures.push({
         name: k,
         time: Canons[scripture][k],
-        complete: false,
       })
     })
     return scriptures
@@ -51,7 +50,11 @@ export default class ScheduleService {
         if (day === totalDays && (scriptsClone && scriptsClone.length > 0)) {
           chaptersRemaining = scriptsClone.length
         }
-        schedule.push({id: uuidv4(), reading: assignment})
+        schedule.push({
+          id: uuidv4(),
+          reading: assignment,
+          complete: false
+        })
       }
       if (rev) {
         return schedule

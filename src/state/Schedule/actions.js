@@ -11,7 +11,7 @@ export const GENERATE_SCHEDULE = '[Schedule] Generate Schedule'
 
 export const SET_AVAILABLE_SCHEDULES = '[Schedule] Set available schedules'
 
-export function markAsComplete (entryId) {
+export function toggleAssignment (entryId) {
   return {
     type: SET_ENTRY_AS_COMPLETE,
     payload: entryId
@@ -32,32 +32,47 @@ export function setAvailableSchedules (availableSchedules) {
   }
 }
 
+export function markAsComplete (assignmentId, scheduleId) {
+  return (dispatch) => {
+    AsyncStorage.getItem('Schedules').then((encoded) => {
+      const schedules = JSON.parse(base64.decode(encoded))
+      const scheduleIdx = schedules.findIndex(v => v.id === scheduleId)
+      schedules[scheduleIdx].assignment[schedules[scheduleIdx].assignment.findIndex(v => v.id === assignmentId)]
+      const asstIdx = schedules[scheduleIdx].assignment.findIndex(v => v.id === assignmentId)
+      const isComplete = schedules[scheduleIdx].assignment[asstIdx].complete
+      schedules[scheduleIdx].assignment[asstIdx].complete = !isComplete
+      const reencoded = base64.encode(JSON.stringify(schedules))
+      AsyncStorage.setItem('Schedules', reencoded).then(() => {
+        dispatch(toggleAssignment(assignmentId))
+      })
+    })
+  }
+}
 
 export function loadSchedule (scheduleId = null) {
   return (dispatch) => {
     try {
-      AsyncStorage.getItem('lastSchedule').then((last) => {
-        AsyncStorage.getItem('Schedules').then((schedules) => {
-          const decoded = JSON.parse(base64.decode(schedules))
-          const availSchedules = decoded.map(formatAvailableSchedules)
-          dispatch(setAvailableSchedules(availSchedules))
-          if (!decoded || decoded.length === 0) {
-            throw TypeError('array is null')
+      AsyncStorage.getItem('Schedules').then((schedules) => {
+        let decoded
+        if (schedules) {
+          decoded = JSON.parse(base64.decode(schedules) || '[]') || []
+        } else {
+          decoded = []
+        }
+        const availSchedules = decoded.map(formatAvailableSchedules)
+        dispatch(setAvailableSchedules(availSchedules))
+        if (!decoded || decoded.length === 0) {
+          throw TypeError('array is null')
+        }
+        if (scheduleId) {
+          const foundSched = decoded.findIndex(v => {
+            return v.id === scheduleId
+          })
+          if (foundSched) {
+            return dispatch(setSchedule(foundSched))
           }
-          if (scheduleId) {
-            const foundSched = decoded.find(v => {
-              return v.id === scheduleId
-            })
-            if (foundSched) {
-              foundSched.assignment = foundSched.assignment.map(checkIdsExist)
-              return dispatch(setSchedule(foundSched))
-            }
-          }
-          let workingArray = decoded[decoded.length - 1].assignment || []
-          workingArray = workingArray.map(checkIdsExist)
-          decoded[decoded.length - 1].assignment = workingArray
-          return dispatch(setSchedule(decoded[decoded.length - 1] || []))
-        })
+        }
+        return dispatch(setSchedule(decoded[decoded.length - 1] || []))
       })
     } catch (e) {
       console.log(e)
@@ -70,12 +85,14 @@ export function genSchedule (days = 10, books = [], scheduleName = null) {
     const schedule = ScheduleService.generateSchedule(days, books)
     try {
       AsyncStorage.getItem('Schedules').then(currentSchedules => {
-        currentSchedules = JSON.parse(base64.decode(currentSchedules))
-        if (!scheduleName) {
-          scheduleName = 'Schedule ' + (currentSchedules && currentSchedules.length + 1) || 0
+        if (currentSchedules) {
+          currentSchedules = JSON.parse(base64.decode(currentSchedules))
         }
         if (!Array.isArray(currentSchedules)) {
           currentSchedules = []
+        }
+        if (!scheduleName) {
+          scheduleName = 'Schedule ' + (currentSchedules && currentSchedules.length + 1) || 0
         }
         const assignment = {
           name: scheduleName,
@@ -102,15 +119,5 @@ function formatAvailableSchedules (value, index) {
     value: value.id,
     totalDays: value.assignment.length,
     daysRemaining: value.assignment.filter(v => !v.complete).length
-  }
-}
-
-function checkIdsExist (value, index) {
-  if (Array.isArray(value)) {
-    const newVal = {
-      reading: value,
-      id: uuidv4()
-    }
-    return newVal
   }
 }

@@ -1,22 +1,33 @@
 import * as ScheduleActions from './actions'
 
 const initialState = {
-  entries: [],
+  entries: {},
   availableSchedules: [],
   loading: false,
 }
 
 export default function schedule (state = initialState, {type, payload}) {
+  const newState = Object.assign({}, state)
   switch (type) {
     case ScheduleActions.SET_SCHEDULE:
       return {
-        ...state,
+        ...newState,
         entries: payload
       }
     case ScheduleActions.SET_AVAILABLE_SCHEDULES:
       return {
-        ...state,
+        ...newState,
         availableSchedules: payload
+      }
+    case ScheduleActions.SET_ENTRY_AS_COMPLETE:
+      const compAssign = newState.entries.assignment.find(v => v.id === payload)
+      compAssign.complete = true
+      return {
+        ...newState,
+        entries: {
+          ...newState.entries,
+          compAssign
+        }
       }
     default:
       return state
