@@ -50,6 +50,7 @@ export function markAsComplete (assignmentId, scheduleId) {
 }
 
 export function loadSchedule (scheduleId = null) {
+  // AsyncStorage.setItem('Schedules', '')
   return (dispatch) => {
     try {
       AsyncStorage.getItem('Schedules').then((schedules) => {
@@ -114,10 +115,11 @@ export function genSchedule (days = 10, books = [], scheduleName = null) {
 }
 
 function formatAvailableSchedules (value, index) {
+  const daysLeft = value.assignment.filter(v => v.complete).length
   return {
     name: value.name,
     value: value.id,
     totalDays: value.assignment.length,
-    daysRemaining: value.assignment.filter(v => !v.complete).length
+    daysRemaining: daysLeft
   }
 }

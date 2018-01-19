@@ -109,7 +109,7 @@ class SettingsModal extends React.Component {
                   onChangeText={(scheduleName) => this.setState({scheduleName})}
                 />
               </Item>
-              <Item>
+              <Item floatingLabel>
                 <Label>Number of Days</Label>
                 <Input
                   value={this.state.daysSelection.toString()}

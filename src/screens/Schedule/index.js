@@ -63,7 +63,7 @@ class Schedule extends Component {
             checked={value.complete}
           />
         </Left>
-        <Body>
+        <Body style={{flex:3}}>
           {(value.reading || []).map((v, i) => (
             <Text key={i}>
               {v.name}

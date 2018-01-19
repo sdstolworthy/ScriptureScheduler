@@ -23,6 +23,7 @@ class AvailableSchedulesModal extends Component {
     super(props)
   }
   renderScheduleListItem = (value, index) => {
+    const {assignment} = this.props
     return (
       <ListItem key={index} onPress={() => this.props.onSelectSchedule(value.value)}>
         <Left>
@@ -42,7 +43,9 @@ class AvailableSchedulesModal extends Component {
       <Modal visible={this.props.visible} onRequestClose={this.props.onRequestClose}>
         <Container>
           <Header>
-            <Left />
+            <Left>
+              <Icon ios="ios-arrow-back" android="md-arrow-back" onPress={this.props.onRequestClose}/>
+            </Left>
             <Body style={{ flex: 4 }}>
               <Title>Available Schedules</Title>
             </Body>
