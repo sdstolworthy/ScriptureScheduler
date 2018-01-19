@@ -19,10 +19,12 @@ import {
   Title,
   Body,
   Item,
-  Input
+  Input,
+  Fab
 } from 'native-base'
+import SettingsModal from '../Settings'
 import { Constants } from 'expo'
-import {connect, dispatch } from 'react-redux'
+import { connect, dispatch } from 'react-redux'
 import * as ScheduleActions from '../../state/Schedule/actions'
 import Moment from 'moment'
 import base64 from 'base-64'
@@ -37,14 +39,14 @@ class Schedule extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      schedule: []
+      schedule: [],
+      settingsVisible: true,
     }
   }
   componentWillMount () {
     this.props.getSchedule()
   }
   renderListItem = (value, index, array) => {
-    // const test = Moment().format('d-mmmm')
     return (
       <ListItem key={index}>
         <Body>
@@ -54,7 +56,7 @@ class Schedule extends Component {
             </Text>
           ))}
         </Body>
-        <Right>
+        <Right style={{flex: 3}}>
           <Text>
             {Moment().add(index, 'DAYS').format('D MMMM')}
           </Text>
@@ -68,13 +70,20 @@ class Schedule extends Component {
   render () {
     const schedule = this.props.schedule.map(this.renderListItem)
     return (
-      <Container style={{paddingTop: 20}}>
-        {/* <Header /> */}
+      <Container style={{ paddingTop: 20 }}>
         <Content>
           <List>
             {schedule}
           </List>
         </Content>
+        <Fab
+          position="bottomRight"
+          style={{ backgroundColor: '#5067FF' }}
+          onPress={()=>this.setState({settingsVisible: true})}
+        >
+          <Icon name="ios-add" />
+        </Fab>
+        <SettingsModal visible={this.state.settingsVisible} onRequestClose={()=>this.setState({settingsVisible: false})}/>
       </Container>
     )
   }
