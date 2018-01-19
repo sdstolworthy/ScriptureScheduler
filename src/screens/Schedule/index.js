@@ -22,6 +22,7 @@ import {
   Input,
   Fab
 } from 'native-base'
+import AvailableSchedulesModal from '../AvailableSchedules'
 import SettingsModal from '../Settings'
 import { Constants } from 'expo'
 import { connect, dispatch } from 'react-redux'
@@ -41,16 +42,20 @@ class Schedule extends Component {
     this.state = {
       schedule: [],
       settingsVisible: false,
+      showAvailableSchedules: false
     }
   }
   componentWillMount () {
     this.props.getSchedule()
   }
+  addFromAvailableSchedulesModal = () => {
+    this.setState({ showAvailableSchedules: false, settingsVisible: true })
+  }
   renderListItem = (value, index, array) => {
     return (
       <ListItem key={index}>
         <Body>
-          {value.map((v, i) => (
+          {(value.reading || []).map((v, i) => (
             <Text key={i}>
               {v.name}
             </Text>
@@ -61,14 +66,18 @@ class Schedule extends Component {
             {Moment().add(index, 'DAYS').format('D MMMM')}
           </Text>
           <Text>
-            {Math.round(value.reduce((acc, curr) => acc + curr.time, 0), 2) + ' minutes'}
+            {Math.round((value.reading || []).reduce((acc, curr) => acc + curr.time, 0), 2) + ' minutes'}
           </Text>
         </Right>
       </ListItem>
     )
   }
+  selectSchedule = (id) => {
+    this.props.getSchedule(id)
+    this.setState({showAvailableSchedules: false})
+  }
   render () {
-    const schedule = this.props.schedule.map(this.renderListItem)
+    const schedule = this.props.schedule.map(this.renderListItem) || []
     return (
       <Container>
         <Header>
@@ -76,7 +85,12 @@ class Schedule extends Component {
           <Body style={{ flex: 4 }}>
             <Title>Schedule</Title>
           </Body>
-          <Right />
+          <Right>
+            <Icon
+              name="ios-menu"
+              onPress={() => this.setState({ showAvailableSchedules: true })}
+            />
+          </Right>
         </Header>
         <Content>
           <List>
@@ -91,6 +105,12 @@ class Schedule extends Component {
           <Icon name="ios-add" />
         </Fab>
         <SettingsModal visible={this.state.settingsVisible} onRequestClose={() => this.setState({ settingsVisible: false })} />
+        <AvailableSchedulesModal
+          visible={this.state.showAvailableSchedules}
+          onRequestClose={() => this.setState({ showAvailableSchedules: false })}
+          addSchedule={this.addFromAvailableSchedulesModal}
+          onSelectSchedule={this.selectSchedule}
+        />
       </Container>
     )
   }
@@ -98,11 +118,12 @@ class Schedule extends Component {
 
 const mstp = (state) => {
   return {
-    schedule: state.Schedule.entries
+    assignment: state.Schedule.entries,
+    schedule: state.Schedule.entries && state.Schedule.entries.assignment || []
   }
 }
 const mdtp = (dispatch) => ({
-  getSchedule: () => dispatch(ScheduleActions.loadSchedule())
+  getSchedule: (id) => dispatch(ScheduleActions.loadSchedule(id))
 })
 
 export default connect(mstp, mdtp)(Schedule)

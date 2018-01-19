@@ -77,8 +77,8 @@ class SettingsModal extends React.Component {
     }
   }
   handleCreateSchedule = () => {
-    const { daysSelection, bookSelection } = this.state
-    this.props.genSchedule(daysSelection, bookSelection)
+    const { daysSelection, bookSelection, scheduleName } = this.state
+    this.props.genSchedule(daysSelection, bookSelection, scheduleName)
     this.props.onRequestClose()
   }
   render () {
@@ -160,7 +160,7 @@ mstp = ({ Schedule }, ownProps) => ({
 })
 
 mdtp = (dispatch) => ({
-  genSchedule: (days = 1, books = []) => dispatch(ScheduleActions.genSchedule(days, books))
+  genSchedule: (days = 1, books = [], title = '') => dispatch(ScheduleActions.genSchedule(days, books, title))
 })
 
 export default connect(mstp, mdtp)(SettingsModal)

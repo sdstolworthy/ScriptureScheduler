@@ -2,11 +2,12 @@ import { StackNavigator, DrawerNavigator } from 'react-navigation'
 import Schedule from './Schedule'
 import SettingsPanel from './Settings/index';
 
-const stack = DrawerNavigator({
+const stack = StackNavigator({
   Home: {
     screen: Schedule,
+    navigationOptions: {
+      header: null,
+    },
   }
-}, {
-  contentComponent: SettingsPanel
 })
 export default stack

@@ -1,5 +1,5 @@
 import * as Canons from '../../../data'
-
+import uuidv4 from 'uuid/v4'
 
 export default class ScheduleService {
   static getTotalTime = (books = []) => {
@@ -11,7 +11,11 @@ export default class ScheduleService {
   static formatScriptures = (scripture) => {
     const scriptures = []
     Object.keys(Canons[scripture]).map((k, i, arr) => {
-        scriptures.push({ name: k, time: Canons[scripture][k] })
+      scriptures.push({
+        name: k,
+        time: Canons[scripture][k],
+        complete: false,
+      })
     })
     return scriptures
   }
@@ -47,7 +51,7 @@ export default class ScheduleService {
         if (day === totalDays && (scriptsClone && scriptsClone.length > 0)) {
           chaptersRemaining = scriptsClone.length
         }
-        schedule.push(assignment)
+        schedule.push({id: uuidv4(), reading: assignment})
       }
       if (rev) {
         return schedule

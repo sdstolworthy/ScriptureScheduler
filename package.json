@@ -31,6 +31,7 @@
     "react-native-multiple-select": "^0.3.0",
     "react-navigation": "^1.0.0-beta.27",
     "react-redux": "^5.0.6",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "uuid": "^3.2.1"
   }
 }
