@@ -1,5 +1,4 @@
 import * as Canons from '../../../data'
-const NUMBER_OF_DAYS = 30
 
 
 export default class ScheduleService {
@@ -17,17 +16,13 @@ export default class ScheduleService {
     return scriptures
   }
 
-  static generateSchedule = (totalDays = NUMBER_OF_DAYS, books = []) => {
+  static generateSchedule = (totalDays = 1, books = []) => {
     const scriptures = []
     books.map(book => {
       scriptures.push(...ScheduleService.formatScriptures(book))
     })
-    // console.log(scriptures)
     const TOTAL_TIME = ScheduleService.getTotalTime(scriptures)
     const AVG_TIME_PER_DAY = parseFloat(TOTAL_TIME) / totalDays
-    let lastIndex = 0
-    // const mean = scriptures.reduce((acc, curr) => acc + curr.time, 0) / totalDays
-    // console.log(mean)
     const initMean = scriptures.reduce((acc, curr) => acc + curr.time, 0) / (totalDays)
     runningAverage = (newScripts, mean = initMean, rev = false) => {
       const schedule = []
@@ -64,11 +59,9 @@ export default class ScheduleService {
       if (diff < 0) {
         return runningAverage(newScripts, mean + 0.05, true)
       }
-      console.log(diff)
       return schedule
     }
     const schedule = runningAverage(Object.assign([], scriptures))
-    console.log(schedule.length)
     return schedule
   }
 }

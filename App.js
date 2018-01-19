@@ -2,10 +2,20 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Expo, { SQLite, StatusBar, Font, AppLoading } from 'expo';
 import Home from './src/screens'
-const db = SQLite.openDatabase('db1.db');
+import Schedule from './src/state'
+import { createStore, applyMiddleware, compose } from 'redux'
+import { Provider } from 'react-redux'
+import thunkMiddleware from 'redux-thunk'
 
-export { db }
+// const db = SQLite.openDatabase('db1.db');
 
+// export { db }
+
+export const store = createStore(
+  Schedule,
+  {},
+  compose(applyMiddleware(thunkMiddleware))
+)
 export default class App extends React.Component {
   constructor (props) {
     super(props)
@@ -18,14 +28,18 @@ export default class App extends React.Component {
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
     });
-    await db.transaction((tx) => {
-      tx.executeSql('CREATE TABLE if not exists SCHEDULE (id integer primary key not null, date text, entry text);')
-    })
+    // await db.transaction((tx) => {
+    //   tx.executeSql('CREATE TABLE if not exists SCHEDULE (id integer primary key not null, date text, entry text);')
+    // })
     this.setState({ isReady: true })
   }
   render () {
     if (this.state.isReady) {
-      return (<Home />)
+      return (
+        <Provider store={store}>
+          <Home />
+        </Provider>
+      )
     } else {
       return (<View />)
     }

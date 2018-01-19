@@ -22,12 +22,14 @@ import {
   Input
 } from 'native-base'
 import { Constants } from 'expo'
+import {connect, dispatch } from 'react-redux'
+import * as ScheduleActions from '../../state/Schedule/actions'
 import Moment from 'moment'
 import base64 from 'base-64'
 let scriptures = {}
 
 
-export default class Schedule extends Component {
+class Schedule extends Component {
   statusBar = {
     backgroundColor: '#000000',
     height: Constants.statusBarHeight
@@ -38,27 +40,8 @@ export default class Schedule extends Component {
       schedule: []
     }
   }
-  async componentWillMount () {
-    // try {
-    //   let schedule = await AsyncStorage.getItem('@Schedule')
-    //   if (schedule) {
-    //     schedule = JSON.parse(base64.decode(schedule))
-    //   } else {
-    //     schedule = ScheduleService.generateSchedule()
-    //     const encoded = base64.encode(JSON.stringify(schedule))
-    //     try {
-    //       await AsyncStorage.setItem('@Schedule', encoded)
-    //     } catch (error) {
-    //       console.warn(error)
-    //     }
-    //   }
-    //   this.setState({ schedule })
-    // } catch (error) {
-    //   console.warn(error)
-    // }
-    this.setState({
-      schedule: ScheduleService.generateSchedule(80, ['OT','DC', 'PGP'])
-    })
+  componentWillMount () {
+    this.props.getSchedule()
   }
   renderListItem = (value, index, array) => {
     // const test = Moment().format('d-mmmm')
@@ -83,7 +66,7 @@ export default class Schedule extends Component {
     )
   }
   render () {
-    schedule = this.state.schedule.map(this.renderListItem)
+    const schedule = this.props.schedule.map(this.renderListItem)
     return (
       <Container style={{paddingTop: 20}}>
         {/* <Header /> */}
@@ -96,3 +79,14 @@ export default class Schedule extends Component {
     )
   }
 }
+
+const mstp = (state) => {
+  return {
+    schedule: state.Schedule.entries
+  }
+}
+const mdtp = (dispatch) => ({
+  getSchedule: () => dispatch(ScheduleActions.loadSchedule())
+})
+
+export default connect(mstp, mdtp)(Schedule)
