@@ -17,9 +17,10 @@ import {
   Title,
   Text
 } from 'native-base'
-import { TextInput, View, Modal } from 'react-native'
+import { TextInput, View, Modal, Platform } from 'react-native'
 import { connect, dispatch } from 'react-redux'
 import * as ScheduleActions from '../../state/Schedule/actions'
+import * as Canons from '../../../data'
 const multiSelectOptions = [{
   id: 'BoM',
   name: 'The Book of Mormon'
@@ -41,6 +42,7 @@ class SettingsModal extends React.Component {
     visible: false,
     onRequestClose: () => { return },
   }
+  static androidIcon = Platform.OS === 'android' ? {color: 'white'} : {}
   constructor (props) {
     super(props)
     this.state = {
@@ -49,10 +51,32 @@ class SettingsModal extends React.Component {
       scheduleName: '',
     }
   }
+  componentDidMount () {
+    this.mapBookToChapterCount('BoM')
+  }
+  mapBookToChapterCount = (book) => {
+    const re = /(([0-9]+\s)?(\w+))(\s\d+)/
+    const bookCount = []
+    const books = Object.keys(Canons[book]).map(v => {
+      const arr = v.match(re)
+      if (arr && arr.length > 0) {
+        const bookName = arr[1]
+        const index = bookCount.findIndex(v => bookName == v.name)
+        if (index > -1) {
+          bookCount[index].count += 1
+        } else {
+          bookCount.push({
+            name: bookName,
+            count: 1
+          })
+        }
+      }
+    })
+  }
   handleDayChange = (value) => {
     try {
       if (value === null || value === '' || !value) {
-        return this.setState({daysSelection: value})
+        return this.setState({ daysSelection: value })
       }
       parseInt(value)
       if (value < 1) {
@@ -60,7 +84,7 @@ class SettingsModal extends React.Component {
       }
       this.setState({ daysSelection: value })
     } catch (e) {
-      this.setState({daysSelection: 1})
+      this.setState({ daysSelection: 1 })
     }
   }
   handleCheck = (id) => {
@@ -92,7 +116,10 @@ class SettingsModal extends React.Component {
           <Header>
             <Left>
               <Button transparent onPress={this.props.onRequestClose}>
-                <Icon name='arrow-back' />
+                <Icon
+                  {...SettingsModal.androidIcon}
+                  name='arrow-back'
+                />
               </Button>
             </Left>
             <Body style={{ flex: 4 }}>
@@ -106,7 +133,7 @@ class SettingsModal extends React.Component {
                 <Label>Name of Schedule</Label>
                 <Input
                   value={this.state.scheduleName}
-                  onChangeText={(scheduleName) => this.setState({scheduleName})}
+                  onChangeText={(scheduleName) => this.setState({ scheduleName })}
                 />
               </Item>
               <Item floatingLabel>

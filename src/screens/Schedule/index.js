@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
+import {BoM} from '../../../data'
 import {
   View,
   Text,
   TextInput,
-  AsyncStorage
+  AsyncStorage,
+  Animated
 } from 'react-native'
 import ScheduleService from '../../services/Schedule'
 import {
@@ -34,6 +36,7 @@ let scriptures = {}
 
 
 class Schedule extends Component {
+  fabTimer = 0
   statusBar = {
     backgroundColor: '#000000',
     height: Constants.statusBarHeight
@@ -43,19 +46,26 @@ class Schedule extends Component {
     this.state = {
       schedule: [],
       settingsVisible: false,
-      showAvailableSchedules: false
+      showAvailableSchedules: false,
+      fabVisible: false
     }
   }
+
   componentWillMount () {
     this.props.getSchedule()
+    this.test()
+  }
+  componentDidMount () {
+    this.fabShowHandler()
   }
   addFromAvailableSchedulesModal = () => {
-    this.setState({ showAvailableSchedules: false}, () => this.setState({settingsVisible: true}))
+    this.setState({ showAvailableSchedules: false }, () => this.setState({ settingsVisible: true }))
   }
   markComplete = (assignmentId, scheduleId) => {
     this.props.markAssignmentComplete(assignmentId, scheduleId)
   }
   renderListItem = (value, index, array) => {
+    // console.log(value)
     const completedStyle = {
       color: 'gray',
       fontStyle: 'italic',
@@ -64,13 +74,13 @@ class Schedule extends Component {
     return (
       <ListItem key={index} onPress={() => this.markComplete(value.id, this.props.assignment.id)}>
         <Left>
-          <CheckBox 
+          <CheckBox
             checked={value.complete}
           />
         </Left>
-        <Body style={{flex:3}}>
+        <Body style={{ flex: 3 }}>
           {(value.reading || []).map((v, i) => (
-            <Text key={i} style={value.complete ? completedStyle : {}}>
+            <Text key={i} style={[value.complete ? completedStyle : {}, {textAlign: 'left'}]}>
               {v.name}
             </Text>
           ))}
@@ -88,11 +98,18 @@ class Schedule extends Component {
   }
   selectSchedule = (id) => {
     this.props.getSchedule(id)
-    this.setState({showAvailableSchedules: false})
+    this.setState({ showAvailableSchedules: false })
+  }
+  fabShowHandler = () => {
+    this.setState({ fabVisible: true }, () => {
+      this.fabTimer = setTimeout(() => this.setState({ fabVisible: false }), 3500)
+    })
   }
   render () {
-    const unfinishedSchedule = this.props.schedule.filter(value => !value.complete).map(this.renderListItem) || []
-    const finishedSchedule = this.props.schedule.filter(value => value.complete).map(this.renderListItem) || []
+    const unfinishedSchedule = this.props.schedule.filter(value => !value.complete) || []
+    const finishedSchedule = this.props.schedule.filter(value => value.complete) || []
+    unfinishedSchedule.push(...finishedSchedule)
+
     return (
       <Container>
         <Header>
@@ -107,19 +124,24 @@ class Schedule extends Component {
             />
           </Right>
         </Header>
-        <Content>
-          <List>
-            {unfinishedSchedule}
-            {finishedSchedule}
-          </List>
-        </Content>
-        <Fab
-          position="bottomRight"
-          style={{ backgroundColor: '#5067FF' }}
-          onPress={() => this.setState({ settingsVisible: true })}
-        >
-          <Icon name="ios-add" />
-        </Fab>
+        <List
+          onScrollBeginDrag={this.fabShowHandler}
+          dataArray={unfinishedSchedule}
+          renderRow={this.renderListItem}
+        />
+        {this.state.fabVisible || !unfinishedSchedule || unfinishedSchedule.length == 0 ?
+          <Animated.View>
+            <Fab
+              position="bottomRight"
+              style={{ backgroundColor: '#5067FF' }}
+              onPress={() => this.setState({ settingsVisible: true })}
+            >
+              <Icon name="ios-add" />
+            </Fab>
+          </Animated.View>
+          :
+          <View />
+        }
         <SettingsModal visible={this.state.settingsVisible} onRequestClose={() => this.setState({ settingsVisible: false })} />
         <AvailableSchedulesModal
           visible={this.state.showAvailableSchedules}

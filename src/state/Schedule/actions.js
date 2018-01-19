@@ -46,7 +46,6 @@ export function markAsComplete (assignmentId, scheduleId) {
       } else {
         schedules[scheduleIdx].assignment[asstIdx].completedOn = Date.now()
       }
-      console.log(schedules[scheduleIdx].assignment[asstIdx].completedOn)
       const reencoded = base64.encode(JSON.stringify(schedules))
       const availSchedules = schedules.map(formatAvailableSchedules)
       dispatch(setAvailableSchedules(availSchedules))

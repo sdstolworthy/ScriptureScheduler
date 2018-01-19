@@ -19,6 +19,7 @@ import {
 import { connect, dispatch } from 'react-redux'
 
 class AvailableSchedulesModal extends Component {
+  static androidIcon = Platform.OS === 'android' ? {color: 'white'} : {}
   constructor (props) {
     super(props)
   }
@@ -47,13 +48,14 @@ class AvailableSchedulesModal extends Component {
         <Container>
           <Header>
             <Left>
-              <Icon ios="ios-arrow-back" android="md-arrow-back" onPress={this.props.onRequestClose} />
+              <Icon {...AvailableSchedulesModal.androidIcon} ios="ios-arrow-back" android="md-arrow-back" onPress={this.props.onRequestClose} />
             </Left>
             <Body style={{ flex: 4 }}>
               <Title>Available Schedules</Title>
             </Body>
             <Right>
               <Icon
+                {...AvailableSchedulesModal.androidIcon}
                 name="ios-add"
                 onPress={this.props.addSchedule}
               />
