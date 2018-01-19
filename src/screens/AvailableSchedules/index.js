@@ -23,17 +23,20 @@ class AvailableSchedulesModal extends Component {
     super(props)
   }
   renderScheduleListItem = (value, index) => {
-    const {assignment} = this.props
+    const { assignment } = this.props
     return (
       <ListItem key={index} onPress={() => this.props.onSelectSchedule(value.value)}>
         <Left>
           <Text>{value.name}</Text>
         </Left>
         <Body>
-          <Text style={{color: 'gray'}}>{value.daysRemaining} Days Remaining</Text>
+          <Text style={{ color: 'gray' }}>{value.daysRemaining} Days Remaining</Text>
         </Body>
         <Right>
-          <CheckBox checked={this.props.assignment.id === value.value} />
+          <CheckBox
+            checked={this.props.assignment.id === value.value}
+            onPress={() => this.props.onSelectSchedule(value.value)}
+          />
         </Right>
       </ListItem>
     )
@@ -44,7 +47,7 @@ class AvailableSchedulesModal extends Component {
         <Container>
           <Header>
             <Left>
-              <Icon ios="ios-arrow-back" android="md-arrow-back" onPress={this.props.onRequestClose}/>
+              <Icon ios="ios-arrow-back" android="md-arrow-back" onPress={this.props.onRequestClose} />
             </Left>
             <Body style={{ flex: 4 }}>
               <Title>Available Schedules</Title>
@@ -52,7 +55,7 @@ class AvailableSchedulesModal extends Component {
             <Right>
               <Icon
                 name="ios-add"
-                onPress={() => { }}
+                onPress={this.props.addSchedule}
               />
             </Right>
           </Header>

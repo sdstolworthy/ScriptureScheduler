@@ -50,7 +50,7 @@ class Schedule extends Component {
     this.props.getSchedule()
   }
   addFromAvailableSchedulesModal = () => {
-    this.setState({ showAvailableSchedules: false, settingsVisible: true })
+    this.setState({ showAvailableSchedules: false}, () => this.setState({settingsVisible: true}))
   }
   markComplete = (assignmentId, scheduleId) => {
     this.props.markAssignmentComplete(assignmentId, scheduleId)

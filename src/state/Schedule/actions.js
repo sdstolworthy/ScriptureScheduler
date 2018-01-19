@@ -66,7 +66,7 @@ export function loadSchedule (scheduleId = null) {
           throw TypeError('array is null')
         }
         if (scheduleId) {
-          const foundSched = decoded.findIndex(v => {
+          const foundSched = decoded.find(v => {
             return v.id === scheduleId
           })
           if (foundSched) {
