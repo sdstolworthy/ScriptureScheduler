@@ -1,0 +1,15 @@
+{
+  "data": {
+    "startTime": 123129191928,
+    "assignment": [
+      {
+        "readings": [],
+        "completed": false,
+      },
+      {
+        "readings": [],
+        "completed": false,
+      }
+    ]
+  }
+}
