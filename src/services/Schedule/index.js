@@ -53,7 +53,8 @@ export default class ScheduleService {
         schedule.push({
           id: uuidv4(),
           reading: assignment,
-          complete: false
+          complete: false,
+          completedOn: null
         })
       }
       if (rev) {

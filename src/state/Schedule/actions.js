@@ -39,9 +39,17 @@ export function markAsComplete (assignmentId, scheduleId) {
       const scheduleIdx = schedules.findIndex(v => v.id === scheduleId)
       schedules[scheduleIdx].assignment[schedules[scheduleIdx].assignment.findIndex(v => v.id === assignmentId)]
       const asstIdx = schedules[scheduleIdx].assignment.findIndex(v => v.id === assignmentId)
-      const isComplete = schedules[scheduleIdx].assignment[asstIdx].complete
-      schedules[scheduleIdx].assignment[asstIdx].complete = !isComplete
+      const isComplete = !schedules[scheduleIdx].assignment[asstIdx].complete
+      schedules[scheduleIdx].assignment[asstIdx].complete = isComplete
+      if (!isComplete) {
+        schedules[scheduleIdx].assignment[asstIdx].completedOn = null
+      } else {
+        schedules[scheduleIdx].assignment[asstIdx].completedOn = Date.now()
+      }
+      console.log(schedules[scheduleIdx].assignment[asstIdx].completedOn)
       const reencoded = base64.encode(JSON.stringify(schedules))
+      const availSchedules = schedules.map(formatAvailableSchedules)
+      dispatch(setAvailableSchedules(availSchedules))
       AsyncStorage.setItem('Schedules', reencoded).then(() => {
         dispatch(toggleAssignment(assignmentId))
       })
@@ -115,7 +123,7 @@ export function genSchedule (days = 10, books = [], scheduleName = null) {
 }
 
 function formatAvailableSchedules (value, index) {
-  const daysLeft = value.assignment.filter(v => v.complete).length
+  const daysLeft = value.assignment.filter(v => !v.complete).length
   return {
     name: value.name,
     value: value.id,

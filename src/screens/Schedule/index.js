@@ -56,6 +56,11 @@ class Schedule extends Component {
     this.props.markAssignmentComplete(assignmentId, scheduleId)
   }
   renderListItem = (value, index, array) => {
+    const completedStyle = {
+      color: 'gray',
+      fontStyle: 'italic',
+      textAlign: 'right',
+    }
     return (
       <ListItem key={index} onPress={() => this.markComplete(value.id, this.props.assignment.id)}>
         <Left>
@@ -65,16 +70,16 @@ class Schedule extends Component {
         </Left>
         <Body style={{flex:3}}>
           {(value.reading || []).map((v, i) => (
-            <Text key={i}>
+            <Text key={i} style={value.complete ? completedStyle : {}}>
               {v.name}
             </Text>
           ))}
         </Body>
         <Right style={{ flex: 3 }}>
-          <Text>
-            {Moment().add(index, 'DAYS').format('D MMMM')}
+          <Text style={value.complete ? completedStyle : {}}>
+            {value.complete ? 'Completed on:\n' + Moment(value.completedOn).format('D MMMM') + '\n' : Moment().add(index, 'DAYS').format('D MMMM')}
           </Text>
-          <Text>
+          <Text style={value.complete ? completedStyle : {}}>
             {Math.round((value.reading || []).reduce((acc, curr) => acc + curr.time, 0), 2) + ' minutes'}
           </Text>
         </Right>
@@ -86,7 +91,8 @@ class Schedule extends Component {
     this.setState({showAvailableSchedules: false})
   }
   render () {
-    const schedule = this.props.schedule.map(this.renderListItem) || []
+    const unfinishedSchedule = this.props.schedule.filter(value => !value.complete).map(this.renderListItem) || []
+    const finishedSchedule = this.props.schedule.filter(value => value.complete).map(this.renderListItem) || []
     return (
       <Container>
         <Header>
@@ -103,7 +109,8 @@ class Schedule extends Component {
         </Header>
         <Content>
           <List>
-            {schedule}
+            {unfinishedSchedule}
+            {finishedSchedule}
           </List>
         </Content>
         <Fab
