@@ -24,7 +24,7 @@ export function setSchedule (schedule) {
 export function loadSchedule () {
   return (dispatch) => {
     try {
-      AsyncStorage.getItem('@Schedule').then(schedule => {
+      AsyncStorage.getItem('Schedule').then((schedule) => {
         const decoded = JSON.parse(base64.decode(schedule))
         dispatch(setSchedule(decoded))
       })
@@ -39,10 +39,11 @@ export function genSchedule (days = 10, books = []) {
     const schedule = ScheduleService.generateSchedule(days, books)
     const encoded = base64.encode(JSON.stringify(schedule))
     try {
-      AsyncStorage.setItem('@Schedule', encoded).then()
+      AsyncStorage.setItem('Schedule', encoded).then(() => {
+        dispatch(setSchedule(schedule))
+      })
     } catch (error) {
       console.warn(error)
     }
-    dispatch(setSchedule(schedule))
   }
 }

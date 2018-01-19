@@ -40,7 +40,7 @@ class Schedule extends Component {
     super(props)
     this.state = {
       schedule: [],
-      settingsVisible: true,
+      settingsVisible: false,
     }
   }
   componentWillMount () {
@@ -56,7 +56,7 @@ class Schedule extends Component {
             </Text>
           ))}
         </Body>
-        <Right style={{flex: 3}}>
+        <Right style={{ flex: 3 }}>
           <Text>
             {Moment().add(index, 'DAYS').format('D MMMM')}
           </Text>
@@ -70,7 +70,14 @@ class Schedule extends Component {
   render () {
     const schedule = this.props.schedule.map(this.renderListItem)
     return (
-      <Container style={{ paddingTop: 20 }}>
+      <Container>
+        <Header>
+          <Left />
+          <Body style={{ flex: 4 }}>
+            <Title>Schedule</Title>
+          </Body>
+          <Right />
+        </Header>
         <Content>
           <List>
             {schedule}
@@ -79,11 +86,11 @@ class Schedule extends Component {
         <Fab
           position="bottomRight"
           style={{ backgroundColor: '#5067FF' }}
-          onPress={()=>this.setState({settingsVisible: true})}
+          onPress={() => this.setState({ settingsVisible: true })}
         >
           <Icon name="ios-add" />
         </Fab>
-        <SettingsModal visible={this.state.settingsVisible} onRequestClose={()=>this.setState({settingsVisible: false})}/>
+        <SettingsModal visible={this.state.settingsVisible} onRequestClose={() => this.setState({ settingsVisible: false })} />
       </Container>
     )
   }

@@ -39,21 +39,28 @@ const multiSelectOptions = [{
 class SettingsModal extends React.Component {
   static defaultProps = {
     visible: false,
-    onRequestClose: () => { return }
+    onRequestClose: () => { return },
   }
   constructor (props) {
     super(props)
     this.state = {
       bookSelection: [],
-      daysSelection: 0,
+      daysSelection: 30,
+      scheduleName: '',
     }
   }
   handleDayChange = (value) => {
     try {
+      if (value === null || value === '' || !value) {
+        return this.setState({daysSelection: value})
+      }
       parseInt(value)
+      if (value < 1) {
+        value = 1
+      }
       this.setState({ daysSelection: value })
     } catch (e) {
-      return
+      this.setState({daysSelection: 1})
     }
   }
   handleCheck = (id) => {
@@ -80,7 +87,7 @@ class SettingsModal extends React.Component {
       bookSelection
     } = this.state
     return (
-      <Modal visible={this.props.visible} onRequestClose={this.props.handleClose}>
+      <Modal visible={this.props.visible} onRequestClose={this.props.onRequestClose}>
         <Container>
           <Header>
             <Left>
@@ -95,9 +102,17 @@ class SettingsModal extends React.Component {
           </Header>
           <Content>
             <Form>
-              <Item>
-                <Label>Number of Days:</Label>
+              <Item floatingLabel>
+                <Label>Name of Schedule</Label>
                 <Input
+                  value={this.state.scheduleName}
+                  onChangeText={(scheduleName) => this.setState({scheduleName})}
+                />
+              </Item>
+              <Item>
+                <Label>Number of Days</Label>
+                <Input
+                  value={this.state.daysSelection.toString()}
                   onChangeText={this.handleDayChange}
                   keyboardType="numeric"
                 />
