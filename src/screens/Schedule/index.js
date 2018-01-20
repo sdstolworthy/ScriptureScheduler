@@ -75,6 +75,7 @@ class Schedule extends Component {
         <Left>
           <CheckBox
             checked={value.complete}
+            onPress={() => this.markComplete(value.id, this.props.assignment.id)}
           />
         </Left>
         <Body style={{ flex: 3 }}>
@@ -125,6 +126,7 @@ class Schedule extends Component {
         </Header>
         <List
           onScrollBeginDrag={this.fabShowHandler}
+          onTouchStart={this.fabShowHandler}
           dataArray={unfinishedSchedule}
           renderRow={this.renderListItem}
         />
