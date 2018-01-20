@@ -50,7 +50,7 @@ export function markAsComplete (assignmentId, scheduleId) {
       const availSchedules = schedules.map(formatAvailableSchedules)
       dispatch(setAvailableSchedules(availSchedules))
       AsyncStorage.setItem('Schedules', reencoded).then(() => {
-        dispatch(toggleAssignment(assignmentId))
+        dispatch(loadSchedule(scheduleId))
       })
     })
   }

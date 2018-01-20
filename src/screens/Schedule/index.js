@@ -53,7 +53,6 @@ class Schedule extends Component {
 
   componentWillMount () {
     this.props.getSchedule()
-    this.test()
   }
   componentDidMount () {
     this.fabShowHandler()

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Modal
+  Modal,
+  Platform
 } from 'react-native'
 import {
   Container,
