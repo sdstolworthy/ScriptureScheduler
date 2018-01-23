@@ -109,7 +109,7 @@ class Schedule extends Component {
     const unfinishedSchedule = this.props.schedule.filter(value => !value.complete) || []
     const finishedSchedule = this.props.schedule.filter(value => value.complete) || []
     unfinishedSchedule.push(...finishedSchedule)
-
+    let rowCounter = 0
     return (
       <Container>
         <Header>
@@ -128,7 +128,11 @@ class Schedule extends Component {
           onScrollBeginDrag={this.fabShowHandler}
           onTouchStart={this.fabShowHandler}
           dataArray={unfinishedSchedule}
-          renderRow={this.renderListItem}
+          renderRow={(data) => {
+            const row = this.renderListItem(data, rowCounter)
+            rowCounter += 1
+            return row
+          }}
         />
         {this.state.fabVisible || !unfinishedSchedule || unfinishedSchedule.length == 0 ?
           <Animated.View>

@@ -16,21 +16,28 @@ import {
   Header,
   Content,
   Text,
+  Button
 } from 'native-base'
 import { connect, dispatch } from 'react-redux'
 
 class AvailableSchedulesModal extends Component {
-  static androidIcon = Platform.OS === 'android' ? {color: 'white'} : {}
+  static androidIcon = Platform.OS === 'android' ? { color: 'white' } : {}
   constructor (props) {
     super(props)
+
+    this.state = { showDelete: null }
   }
   renderScheduleListItem = (value, index) => {
     const { assignment } = this.props
-    return (
-      <ListItem key={index} onPress={() => this.props.onSelectSchedule(value.value)}>
-        <Left>
+    const rowBody = (
+      <ListItem
+        key={index}
+        onPress={() => this.props.onSelectSchedule(value.value)}
+        onLongPress={() => this.setState({ showDelete: value.value })}
+      >
+        < Left >
           <Text>{value.name}</Text>
-        </Left>
+        </Left >
         <Body>
           <Text style={{ color: 'gray' }}>{value.daysRemaining} Days Remaining</Text>
         </Body>
@@ -40,12 +47,26 @@ class AvailableSchedulesModal extends Component {
             onPress={() => this.props.onSelectSchedule(value.value)}
           />
         </Right>
+      </ListItem >
+    )
+    const showDelete = (
+      <ListItem key={index} style={{ backgroundColor: 'red', flex: 4 }}>
+        <Body style={{ backgroundColor: 'red', flex: 4 }} >
+          <Text style={{ color: 'white', elevation: 1 }}>Delete Schedule</Text>
+        </Body>
+        <Right style={{ flex: 2 }} >
+          <Button onPress={() => this.setState({ showDelete: null })}><Text>Cancel</Text></Button>
+        </Right>
       </ListItem>
     )
+    return this.state.showDelete === value.value ? showDelete : rowBody
+  }
+  handleClose = () => {
+    this.setState({showDelete: null}, () => this.props.onRequestClose)
   }
   render () {
     return (
-      <Modal visible={this.props.visible} onRequestClose={this.props.onRequestClose}>
+      <Modal visible={this.props.visible} onRequestClose={this.handleClose}>
         <Container>
           <Header>
             <Left>
